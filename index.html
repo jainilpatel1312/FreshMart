@@ -282,10 +282,12 @@
                                 <!-- User Dropdown Menu -->
                                 <div id="userMenu" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border hidden z-50">
                                     <div class="py-2">
+                                        
                                         <button onclick="showUserDashboard('profile')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">👤 My Profile</button>
                                         <button onclick="showUserDashboard('orders')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">📦 My Orders</button>
                                         <button onclick="showUserDashboard('cart')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">🛒 My Cart</button>
                                         <button onclick="showUserDashboard('settings')" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">⚙️ Settings</button>
+                                        <button id="adminMenuItem" onclick="showAdminDashboard('overview')" class="hidden w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">🛠️ Admin</button>
                                         <hr class="my-2">
                                         <button onclick="logout()" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">🚪 Logout</button>
                                     </div>
@@ -1165,6 +1167,7 @@
                                         <p class="font-medium text-gray-800">January 15, 1990</p>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -1445,6 +1448,159 @@
         </div>
     </div>
 
+    <!-- ========== ADMIN DASHBOARD MODAL ========== -->
+    <div id="adminDashboard" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl w-full max-w-6xl max-h-full overflow-hidden">
+            <!-- Header -->
+            <div class="p-6 border-b bg-gradient-to-r from-gray-900 to-green-700 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">🛠️</span>
+                        <div>
+                            <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+                            <p class="opacity-80 text-sm">Manage products, orders, and users</p>
+                        </div>
+                    </div>
+                    <button onclick="closeAdminDashboard()" class="text-white hover:text-gray-200 text-xl">✕</button>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <button id="adminTab-overview" onclick="switchAdminTab('overview')" class="dashboard-tab active px-4 py-2 rounded-lg text-sm font-medium bg-white bg-opacity-20">📊 Overview</button>
+                    <button id="adminTab-products" onclick="switchAdminTab('products')" class="dashboard-tab px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-10">🧺 Products</button>
+                    <button id="adminTab-orders" onclick="switchAdminTab('orders')" class="dashboard-tab px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-10">📦 Orders</button>
+                    <button id="adminTab-users" onclick="switchAdminTab('users')" class="dashboard-tab px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-10">👥 Users</button>
+                    <button id="adminTab-files" onclick="switchAdminTab('files')" class="dashboard-tab px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-10">📄 Files</button>
+                    <button id="adminTab-settings" onclick="switchAdminTab('settings')" class="dashboard-tab px-4 py-2 rounded-lg text-sm font-medium hover:bg-white hover:bg-opacity-10">⚙️ Settings</button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                <!-- Sidebar quick stats (visible on lg+) -->
+                <aside class="hidden lg:block lg:col-span-2 xl:col-span-1 p-6 bg-gray-50 border-r overflow-y-auto">
+                    <div class="space-y-4">
+                        <div class="bg-white rounded-xl p-4 border">
+                            <div class="text-sm text-gray-500">Total Products</div>
+                            <div class="text-2xl font-bold" id="adminStatProducts">0</div>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 border">
+                            <div class="text-sm text-gray-500">Total Orders</div>
+                            <div class="text-2xl font-bold" id="adminStatOrders">0</div>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 border">
+                            <div class="text-sm text-gray-500">Revenue (₹)</div>
+                            <div class="text-2xl font-bold" id="adminStatRevenue">0</div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main -->
+                <section class="col-span-1 lg:col-span-3 xl:col-span-4 p-6 overflow-y-auto max-h-[70vh]">
+                    <!-- Overview -->
+                    <div id="adminSection-overview" class="dashboard-section">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-green-100">
+                                <div class="text-sm text-green-700">Today Orders</div>
+                                <div class="text-3xl font-bold" id="adminTodayOrders">0</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
+                                <div class="text-sm text-blue-700">Pending Orders</div>
+                                <div class="text-3xl font-bold" id="adminPendingOrders">0</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-5 rounded-xl border border-yellow-100">
+                                <div class="text-sm text-yellow-700">Low Stock</div>
+                                <div class="text-3xl font-bold" id="adminLowStock">0</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl border p-5">
+                            <h3 class="font-semibold mb-3">Recent Orders</h3>
+                            <div id="adminRecentOrders" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Products -->
+                    <div id="adminSection-products" class="dashboard-section hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <h3 class="font-semibold text-lg">Manage Products</h3>
+                            <div class="flex gap-2">
+                                <input id="adminProductSearch" oninput="adminFilterProducts()" placeholder="Search products" class="px-3 py-2 border rounded-lg text-sm">
+                                <button onclick="openAdminProductForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">➕ Add Product</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto border rounded-xl">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left">#</th>
+                                        <th class="px-3 py-2 text-left">Name</th>
+                                        <th class="px-3 py-2 text-left">Category</th>
+                                        <th class="px-3 py-2 text-left">Price</th>
+                                        <th class="px-3 py-2 text-left">Stock</th>
+                                        <th class="px-3 py-2 text-left">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Orders -->
+                    <div id="adminSection-orders" class="dashboard-section hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg">Manage Orders</h3>
+                            <select id="adminOrderFilter" onchange="renderAdminOrders()" class="px-3 py-2 border rounded-lg text-sm">
+                                <option value="all">All</option>
+                                <option value="Processing">Processing</option>
+                                <option value="In Transit">In Transit</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div id="adminOrdersList" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Users -->
+                    <div id="adminSection-users" class="dashboard-section hidden">
+                        <h3 class="font-semibold text-lg mb-4">Registered Users</h3>
+                        <div id="adminUsersList" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Files -->
+                    <div id="adminSection-files" class="dashboard-section hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <h3 class="font-semibold text-lg">Local Files</h3>
+                            <div class="flex gap-2">
+                                <input id="adminFileSearch" oninput="renderAdminFiles()" placeholder="Search files" class="px-3 py-2 border rounded-lg text-sm">
+                                <button onclick="openAdminFileForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">➕ New File</button>
+                            </div>
+                        </div>
+                        <div id="adminFilesList" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div id="adminSection-settings" class="dashboard-section hidden">
+                        <h3 class="font-semibold text-lg mb-4">Store Settings</h3>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="bg-white border rounded-xl p-4">
+                                <label class="block text-sm font-medium mb-2">Store Name</label>
+                                <input id="adminStoreName" class="w-full px-3 py-2 border rounded-lg" value="FreshMart">
+                            </div>
+                            <div class="bg-white border rounded-xl p-4">
+                                <label class="block text-sm font-medium mb-2">Delivery Charge (₹)</label>
+                                <input id="adminDeliveryCharge" type="number" class="w-full px-3 py-2 border rounded-lg" value="25">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="saveAdminSettings()" class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700">Save Settings</button>
+                                <button onclick="clearAllLocalData()" class="bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700">Clear Local Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
     <!-- ========== LOGIN MODAL COMPONENT ========== -->
     <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl transform transition-all duration-300 scale-95 hover:scale-100">
@@ -1586,7 +1742,7 @@
   </form>
 </div>
 
-
+    
     <!-- ========== JAVASCRIPT SECTION ========== -->
     <script>
         // ========== DATA LAYER ==========
@@ -1665,9 +1821,201 @@
         let currentUser = null;
         let userOrders = [];
         let registeredUsers = {}; // Store registered users with their passwords
+        let adminOrders = []; // Global orders for admin view
+        let adminProducts = []; // products with stock
+        let adminSettings = { storeName: 'FreshMart', deliveryCharge: 25 };
+        let userLocations = {}; // email -> { lat, lng, address }
+        const ADMIN_CREDENTIALS = { email: 'admin@freshmart.com', password: 'admin123', name: 'Admin' };
+
+        // ========== PERSISTENCE (localStorage) ==========
+        const LS_KEYS = {
+            registeredUsers: 'fm_registeredUsers',
+            currentUser: 'fm_currentUser',
+            userOrders: 'fm_userOrders',
+            adminOrders: 'fm_adminOrders',
+            adminProducts: 'fm_adminProducts',
+            adminSettings: 'fm_adminSettings',
+            adminFilesIndex: 'fm_adminFilesIndex', // stores list of file names
+            adminFilePrefix: 'fm_file_' , // key prefix for file content
+            cart: 'fm_cart',
+            userLocations: 'fm_userLocations'
+        };
+
+        function persistRegisteredUsers() {
+            try { localStorage.setItem(LS_KEYS.registeredUsers, JSON.stringify(registeredUsers)); } catch (e) {}
+        }
+        function persistCurrentUser() {
+            try { localStorage.setItem(LS_KEYS.currentUser, JSON.stringify(currentUser)); } catch (e) {}
+        }
+        function persistUserLocations() {}
+        function persistUserOrders() {
+            try { localStorage.setItem(LS_KEYS.userOrders, JSON.stringify(userOrders)); } catch (e) {}
+        }
+        function persistAdminOrders() {
+            try { localStorage.setItem(LS_KEYS.adminOrders, JSON.stringify(adminOrders)); } catch (e) {}
+        }
+        function persistAdminProducts() {
+            try { localStorage.setItem(LS_KEYS.adminProducts, JSON.stringify(adminProducts)); } catch (e) {}
+        }
+        function persistAdminSettings() {
+            try { localStorage.setItem(LS_KEYS.adminSettings, JSON.stringify(adminSettings)); } catch (e) {}
+        }
+        function persistCart() {
+            try { localStorage.setItem(LS_KEYS.cart, JSON.stringify(cart)); } catch (e) {}
+        }
+
+        function loadStateFromStorage() {
+            try {
+                const ru = localStorage.getItem(LS_KEYS.registeredUsers);
+                if (ru) registeredUsers = JSON.parse(ru) || {};
+            } catch (e) {}
+            try {
+                const cu = localStorage.getItem(LS_KEYS.currentUser);
+                if (cu) currentUser = JSON.parse(cu) || null;
+            } catch (e) {}
+            // userLocations deprecated
+            try {
+                const uo = localStorage.getItem(LS_KEYS.userOrders);
+                if (uo) userOrders = JSON.parse(uo) || [];
+            } catch (e) {}
+            try {
+                const ao = localStorage.getItem(LS_KEYS.adminOrders);
+                if (ao) adminOrders = JSON.parse(ao) || [];
+            } catch (e) {}
+            try {
+                const ap = localStorage.getItem(LS_KEYS.adminProducts);
+                if (ap) adminProducts = JSON.parse(ap) || [];
+            } catch (e) {}
+            try {
+                const aset = localStorage.getItem(LS_KEYS.adminSettings);
+                if (aset) adminSettings = JSON.parse(aset) || adminSettings;
+            } catch (e) {}
+            try {
+                const c = localStorage.getItem(LS_KEYS.cart);
+                if (c) cart = JSON.parse(c) || [];
+            } catch (e) {}
+        }
+
+        function clearAllLocalData() {
+            Object.values(LS_KEYS).forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+            showNotification('Local data cleared. 🔄 Reloading...', 'success');
+            setTimeout(() => location.reload(), 600);
+        }
+
+        // ===== Admin Files (localStorage-backed) =====
+        function getFilesIndex() {
+            try { return JSON.parse(localStorage.getItem(LS_KEYS.adminFilesIndex)) || []; } catch(e) { return []; }
+        }
+        function setFilesIndex(list) {
+            try { localStorage.setItem(LS_KEYS.adminFilesIndex, JSON.stringify(list)); } catch(e) {}
+        }
+        function readFileFromStorage(name) {
+            try { return localStorage.getItem(LS_KEYS.adminFilePrefix + name) ?? ''; } catch(e) { return ''; }
+        }
+        function writeFileToStorage(name, content) {
+            try { localStorage.setItem(LS_KEYS.adminFilePrefix + name, content); } catch(e) {}
+        }
+        function deleteFileFromStorage(name) {
+            try { localStorage.removeItem(LS_KEYS.adminFilePrefix + name); } catch(e) {}
+        }
+        function downloadText(filename, text) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        function renderAdminFiles() {
+            const listEl = document.getElementById('adminFilesList');
+            const q = (document.getElementById('adminFileSearch')?.value || '').toLowerCase();
+            if (!listEl) return;
+            const files = getFilesIndex().filter(n => n.toLowerCase().includes(q));
+            if (files.length === 0) { listEl.innerHTML = '<div class="text-gray-500 text-sm">No files</div>'; return; }
+            listEl.innerHTML = files.map(name => {
+                const content = readFileFromStorage(name);
+                const preview = (content || '').slice(0, 120).replace(/</g,'&lt;');
+                return `
+                <div class="bg-white border rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold">${name}</div>
+                            <div class="text-xs text-gray-500">${content.length} chars</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-sm border rounded-lg" onclick="openAdminFileForm('${name}')">Edit</button>
+                            <button class="px-3 py-1 text-sm border rounded-lg" onclick="downloadText('${name}', readFileFromStorage('${name}'))">Download</button>
+                            <button class="px-3 py-1 text-sm text-red-700 border border-red-300 rounded-lg" onclick="deleteAdminFile('${name}')">Delete</button>
+                        </div>
+                    </div>
+                    <pre class="mt-3 text-xs text-gray-700 whitespace-pre-wrap">${preview}${content.length>120?'...':''}</pre>
+                </div>`;
+            }).join('');
+        }
+        function openAdminFileForm(name) {
+            const isEdit = !!name;
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4';
+            modal.onclick = () => modal.remove();
+            const safeName = name || '';
+            const content = isEdit ? readFileFromStorage(name) : '';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-full max-w-2xl p-6" onclick="event.stopPropagation()">
+                    <h3 class="text-lg font-semibold mb-4">${isEdit?'Edit':'New'} File</h3>
+                    <div class="space-y-3">
+                        <input id="af-name" class="w-full px-3 py-2 border rounded-lg" placeholder="File name (e.g., notes.txt)" value="${safeName}" ${isEdit?'disabled':''}>
+                        <textarea id="af-content" rows="12" class="w-full px-3 py-2 border rounded-lg font-mono text-sm" placeholder="Write your content here...">${content.replace(/</g,'&lt;')}</textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button class="px-4 py-2 border rounded-lg" onclick="this.closest('.fixed').remove()">Cancel</button>
+                        <button class="px-4 py-2 bg-green-600 text-white rounded-lg" onclick="saveAdminFile('${safeName}')">Save</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        function saveAdminFile(existingName) {
+            const nameEl = document.getElementById('af-name');
+            const contentEl = document.getElementById('af-content');
+            const name = (nameEl.value || '').trim();
+            const content = contentEl.value || '';
+            if (!name) { showNotification('Enter file name', 'error'); return; }
+            let idx = getFilesIndex();
+            if (existingName && existingName !== name) {
+                deleteFileFromStorage(existingName);
+                idx = idx.filter(n => n !== existingName);
+            }
+            if (!idx.includes(name)) idx.unshift(name);
+            setFilesIndex(idx);
+            writeFileToStorage(name, content);
+            renderAdminFiles();
+            showNotification('File saved ✅', 'success');
+            document.querySelectorAll('.fixed.inset-0.bg-black.bg-opacity-50.z-[60]').forEach(m => m.remove());
+        }
+        function deleteAdminFile(name) {
+            let idx = getFilesIndex().filter(n => n !== name);
+            setFilesIndex(idx);
+            deleteFileFromStorage(name);
+            renderAdminFiles();
+            showNotification('File deleted 🗑️', 'success');
+        }
 
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
+            // Load from localStorage
+            loadStateFromStorage();
+
+            // Initialize defaults if empty
+            if (!Array.isArray(adminProducts) || adminProducts.length === 0) {
+                adminProducts = products.map(p => ({ ...p, stock: 50 }));
+                persistAdminProducts();
+            }
+            if (!Array.isArray(userOrders)) userOrders = [];
+            if (!Array.isArray(adminOrders)) adminOrders = [];
+            if (!Array.isArray(cart)) cart = [];
+
+            // Reflect current user into UI (including admin menu item)
+            updateUserInterface();
+
             showSection('home');
             displayProducts();
             updateCartUI();
@@ -1917,6 +2265,7 @@
             // Update total
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             cartTotal.textContent = `₹${total}`;
+            persistCart();
         }
 
         function toggleCart() {
@@ -2085,6 +2434,10 @@
                     
                     // Add to user's order history at the beginning
                     userOrders.unshift(newOrder);
+                    // Add to admin global orders
+                    adminOrders.unshift({ ...newOrder });
+                    persistUserOrders();
+                    persistAdminOrders();
                     
                     // Update order number in success modal
                     document.getElementById('orderNumber').textContent = orderNumber;
@@ -2093,6 +2446,7 @@
                     cart = [];
                     updateCartUI();
                     updateDashboardCart();
+                    persistCart();
                     
                     // Update profile stats if user is logged in
                     if (currentUser) {
@@ -2114,6 +2468,12 @@
                     
                     // Show success notification
                     showNotification(`Order #${orderNumber} placed successfully! 🎉`, 'success');
+                    // Refresh admin stats if dashboard is open
+                    const adminDash = document.getElementById('adminDashboard');
+                    if (adminDash && !adminDash.classList.contains('hidden')) {
+                        refreshAdminStats();
+                        renderAdminOrders();
+                    }
                     
                     console.log('Order placed successfully:', newOrder);
                     console.log('Total orders now:', userOrders.length);
@@ -2199,15 +2559,34 @@
 
         function handleLogin(event) {
             event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value.trim();
             
+            // Admin hard-check
+            if (email === ADMIN_CREDENTIALS.email) {
+                if (password === ADMIN_CREDENTIALS.password) {
+                    loginUser(ADMIN_CREDENTIALS.name, 'admin', ADMIN_CREDENTIALS.email);
+                    persistCurrentUser();
+                    persistRegisteredUsers();
+                    persistUserOrders();
+                    closeLoginModal();
+                    showNotification('Admin login successful. 👑', 'success');
+                    return;
+                } else {
+                    showNotification('Invalid admin password. ❌', 'error');
+                    return;
+                }
+            }
+
             // Check if user is registered
             if (registeredUsers[email]) {
                 // Verify password
-                if (registeredUsers[email].password === password) {
+                if ((registeredUsers[email].password || '').trim() === password) {
                     const userName = registeredUsers[email].name;
                     loginUser(userName, 'customer', email);
+                    persistCurrentUser();
+                    persistRegisteredUsers();
+                    persistUserOrders();
                     closeLoginModal();
                     showNotification('Login successful! Welcome back! 👋', 'success');
                 } else {
@@ -2243,6 +2622,12 @@
                 return;
             }
             
+            // Disallow registering admin email
+            if (email === ADMIN_CREDENTIALS.email) {
+                showNotification('This email is reserved for admin. ❌', 'error');
+                return;
+            }
+
             // Check if user already exists
             if (registeredUsers[email]) {
                 showNotification('Account already exists! Please login instead. ⚠️', 'error');
@@ -2260,6 +2645,9 @@
             
             // Auto login after registration
             loginUser(fullName, 'customer', email);
+            persistRegisteredUsers();
+            persistCurrentUser();
+            persistUserOrders();
             closeLoginModal();
             showNotification('Account created successfully! Welcome to FreshMart! 🎉', 'success');
         }
@@ -2268,14 +2656,18 @@
             if (userType === 'customer') {
                 loginUser('John Doe', 'customer', 'john.doe@example.com');
             } else if (userType === 'admin') {
-                loginUser('Admin', 'admin', 'admin@freshmart.com');
+                showNotification('Use admin email/password to login. 👑', 'error');
+                return;
             }
+            persistCurrentUser();
+            persistUserOrders();
             closeLoginModal();
         }
 
         function loginUser(name, type, email) {
             currentUser = { name, type, email };
             updateUserInterface();
+            persistCurrentUser();
             
             // Add some demo orders for the user
             if (userOrders.length === 0) {
@@ -2301,6 +2693,12 @@
                         status: 'In Transit'
                     }
                 ];
+                persistUserOrders();
+            }
+            const adminMenuItem = document.getElementById('adminMenuItem');
+            if (adminMenuItem) {
+                if (type === 'admin') adminMenuItem.classList.remove('hidden');
+                else adminMenuItem.classList.add('hidden');
             }
         }
 
@@ -2309,6 +2707,8 @@
             userOrders = [];
             updateUserInterface();
             toggleUserMenu(); // Close the menu
+            persistCurrentUser();
+            persistUserOrders();
         }
 
         function updateUserInterface() {
@@ -2320,9 +2720,26 @@
                 loginBtn.classList.add('hidden');
                 userSection.classList.remove('hidden');
                 userName.textContent = currentUser.name;
+                const adminMenuItem = document.getElementById('adminMenuItem');
+                if (adminMenuItem) {
+                    if (currentUser.type === 'admin') adminMenuItem.classList.remove('hidden');
+                    else adminMenuItem.classList.add('hidden');
+                }
+                // Update location in dropdown if available
+                const menuLoc = document.getElementById('userMenuLocation');
+                if (menuLoc) {
+                    const entry = userLocations[currentUser.email];
+                    if (entry && (entry.address || (entry.lat && entry.lng))) {
+                        menuLoc.textContent = entry.address ? entry.address : `${entry.lat.toFixed(4)}, ${entry.lng.toFixed(4)}`;
+                    } else {
+                        menuLoc.textContent = 'Not set';
+                    }
+                }
             } else {
                 loginBtn.classList.remove('hidden');
                 userSection.classList.add('hidden');
+                const adminMenuItem = document.getElementById('adminMenuItem');
+                if (adminMenuItem) adminMenuItem.classList.add('hidden');
             }
         }
 
@@ -2394,6 +2811,8 @@
             
             // Update stats with proper counts
             updateProfileStats();
+
+            // Location removed
         }
 
         function updateProfileStats() {
@@ -2780,6 +3199,8 @@
         }
 
         // ========== PAYMENT METHOD FUNCTIONS ==========
+        async function captureCurrentLocation() {}
+
         function togglePaymentMethod(method) {
             // Hide all payment detail sections
             document.getElementById('cardDetails').classList.add('hidden');
@@ -2944,7 +3365,242 @@
                 userMenu.classList.add('hidden');
             }
         });
+
+        // ========== ADMIN DASHBOARD LOGIC ==========
+        function showAdminDashboard(tab) {
+            if (!currentUser || currentUser.type !== 'admin') {
+                showNotification('Admin access only. 🔐', 'error');
+                return;
+            }
+            const dash = document.getElementById('adminDashboard');
+            dash.classList.remove('hidden');
+            dash.classList.add('flex');
+            switchAdminTab(tab || 'overview');
+            refreshAdminStats();
+            toggleUserMenu();
+        }
+
+        function closeAdminDashboard() {
+            const dash = document.getElementById('adminDashboard');
+            dash.classList.add('hidden');
+            dash.classList.remove('flex');
+        }
+
+        function switchAdminTab(tab) {
+            const tabs = ['overview','products','orders','users','files','settings'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('adminTab-' + t);
+                if (btn) {
+                    btn.classList.remove('active','bg-white','bg-opacity-20');
+                    btn.classList.add('hover:bg-white','hover:bg-opacity-10');
+                }
+                const sec = document.getElementById('adminSection-' + t);
+                if (sec) sec.classList.add('hidden');
+            });
+            const activeBtn = document.getElementById('adminTab-' + tab);
+            if (activeBtn) {
+                activeBtn.classList.add('active','bg-white','bg-opacity-20');
+                activeBtn.classList.remove('hover:bg-white','hover:bg-opacity-10');
+            }
+            const activeSec = document.getElementById('adminSection-' + tab);
+            if (activeSec) activeSec.classList.remove('hidden');
+
+            if (tab === 'overview') renderAdminOverview();
+            if (tab === 'products') renderAdminProducts();
+            if (tab === 'orders') renderAdminOrders();
+            if (tab === 'users') renderAdminUsers();
+            if (tab === 'settings') renderAdminSettings();
+            if (tab === 'files') renderAdminFiles();
+        }
+
+        function refreshAdminStats() {
+            const prodCount = adminProducts.length;
+            const orderCount = adminOrders.length;
+            const revenue = adminOrders.reduce((s, o) => s + (o.total || 0), 0);
+            const elP = document.getElementById('adminStatProducts');
+            const elO = document.getElementById('adminStatOrders');
+            const elR = document.getElementById('adminStatRevenue');
+            if (elP) elP.textContent = prodCount;
+            if (elO) elO.textContent = orderCount;
+            if (elR) elR.textContent = revenue;
+
+            const todayStr = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'short',day:'numeric'});
+            const todayOrders = adminOrders.filter(o => o.date === todayStr).length;
+            const pending = adminOrders.filter(o => o.status === 'Processing').length;
+            const lowStock = adminProducts.filter(p => (p.stock || 0) < 10).length;
+            const tEl = document.getElementById('adminTodayOrders');
+            const pEl = document.getElementById('adminPendingOrders');
+            const lEl = document.getElementById('adminLowStock');
+            if (tEl) tEl.textContent = todayOrders;
+            if (pEl) pEl.textContent = pending;
+            if (lEl) lEl.textContent = lowStock;
+        }
+
+        function renderAdminOverview() {
+            const list = document.getElementById('adminRecentOrders');
+            if (!list) return;
+            const items = adminOrders.slice(0, 5).map(o => `
+                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div class="text-sm">
+                        <div class="font-semibold">#${o.id}</div>
+                        <div class="text-gray-500">${o.date} • ${o.paymentMethod || ''}</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-green-600">₹${o.total}</span>
+                        <span class="px-2 py-1 rounded-full text-xs ${o.status==='Delivered'?'bg-green-100 text-green-800':o.status==='Processing'?'bg-yellow-100 text-yellow-800':o.status==='In Transit'?'bg-blue-100 text-blue-800':'bg-gray-100 text-gray-800'}">${o.status}</span>
+                    </div>
+                </div>`).join('');
+            list.innerHTML = items || '<div class="text-gray-500 text-sm">No orders yet</div>';
+        }
+
+        function adminFilterProducts() {
+            const q = (document.getElementById('adminProductSearch')?.value || '').toLowerCase();
+            renderAdminProducts(q);
+        }
+
+        function renderAdminProducts(query) {
+            const tbody = document.getElementById('adminProductsTable');
+            if (!tbody) return;
+            const items = (query ? adminProducts.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)) : adminProducts);
+            tbody.innerHTML = items.map((p, idx) => `
+                <tr class="border-t">
+                    <td class="px-3 py-2">${idx+1}</td>
+                    <td class="px-3 py-2">${p.image} ${p.name}</td>
+                    <td class="px-3 py-2 capitalize">${p.category}</td>
+                    <td class="px-3 py-2">₹${p.price}</td>
+                    <td class="px-3 py-2">${p.stock ?? 0}</td>
+                    <td class="px-3 py-2 space-x-2">
+                        <button class="text-blue-600" onclick="openAdminProductForm(${p.id})">Edit</button>
+                        <button class="text-red-600" onclick="deleteAdminProduct(${p.id})">Delete</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function openAdminProductForm(id) {
+            const existing = id ? adminProducts.find(p => p.id === id) : null;
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4';
+            modal.onclick = () => modal.remove();
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-full max-w-md p-6" onclick="event.stopPropagation()">
+                    <h3 class="text-lg font-semibold mb-4">${existing?'Edit':'Add'} Product</h3>
+                    <div class="space-y-3">
+                        <input id="ap-name" class="w-full px-3 py-2 border rounded-lg" placeholder="Name" value="${existing?existing.name:''}">
+                        <input id="ap-category" class="w-full px-3 py-2 border rounded-lg" placeholder="Category" value="${existing?existing.category:''}">
+                        <input id="ap-price" type="number" class="w-full px-3 py-2 border rounded-lg" placeholder="Price" value="${existing?existing.price:''}">
+                        <input id="ap-stock" type="number" class="w-full px-3 py-2 border rounded-lg" placeholder="Stock" value="${existing?existing.stock??0:50}">
+                        <input id="ap-emoji" class="w-full px-3 py-2 border rounded-lg" placeholder="Emoji/Image" value="${existing?existing.image:'🛒'}">
+                        <textarea id="ap-desc" class="w-full px-3 py-2 border rounded-lg" rows="3" placeholder="Description">${existing?existing.description||'':''}</textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button class="px-4 py-2 border rounded-lg" onclick="this.closest('.fixed').remove()">Cancel</button>
+                        <button class="px-4 py-2 bg-green-600 text-white rounded-lg" onclick="saveAdminProduct(${id||''})">Save</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        function saveAdminProduct(id) {
+            const name = document.getElementById('ap-name').value.trim();
+            const category = document.getElementById('ap-category').value.trim();
+            const price = Number(document.getElementById('ap-price').value);
+            const stock = Number(document.getElementById('ap-stock').value);
+            const image = document.getElementById('ap-emoji').value.trim() || '🛒';
+            const description = document.getElementById('ap-desc').value.trim();
+            if (!name || !category || !price) { showNotification('Fill all required fields', 'error'); return; }
+            if (id) {
+                const idx = adminProducts.findIndex(p => p.id === id);
+                if (idx >= 0) adminProducts[idx] = { ...adminProducts[idx], name, category, price, stock, image, description };
+            } else {
+                const newId = (Math.max(...adminProducts.map(p => p.id || 0)) || 0) + 1;
+                adminProducts.unshift({ id: newId, name, category, price, stock, image, description });
+            }
+            persistAdminProducts();
+            // sync base products for storefront list
+            const storefrontIdx = products.findIndex(p => p.id === id);
+            if (storefrontIdx >= 0) products[storefrontIdx] = { ...products[storefrontIdx], name, category, price, image, description };
+            else if (!id) products.unshift({ id: adminProducts[0].id, name, category, price, image, description });
+
+            renderAdminProducts();
+            displayProducts();
+            showNotification('Product saved ✅', 'success');
+            document.querySelectorAll('.fixed.inset-0.bg-black.bg-opacity-50.z-[60]').forEach(m => m.remove());
+        }
+
+        function deleteAdminProduct(id) {
+            adminProducts = adminProducts.filter(p => p.id !== id);
+            // also remove from storefront list
+            const idx = products.findIndex(p => p.id === id);
+            if (idx >= 0) products.splice(idx,1);
+            persistAdminProducts();
+            renderAdminProducts();
+            displayProducts();
+            showNotification('Product deleted 🗑️', 'success');
+        }
+
+        function renderAdminOrders() {
+            const list = document.getElementById('adminOrdersList');
+            if (!list) return;
+            const filter = document.getElementById('adminOrderFilter')?.value || 'all';
+            const items = (filter==='all' ? adminOrders : adminOrders.filter(o => o.status === filter));
+            list.innerHTML = items.map(o => `
+                <div class="bg-white border rounded-xl p-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="font-semibold">Order #${o.id}</div>
+                            <div class="text-sm text-gray-500">${o.date} • ${o.paymentMethod || ''}</div>
+                        </div>
+                        <select class="text-sm border rounded-lg px-2 py-1" onchange="updateAdminOrderStatus('${o.id}', this.value)">
+                            ${['Processing','In Transit','Delivered','Cancelled'].map(s => `<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="mt-3 text-sm text-gray-700">Items: ${o.items.length} • Total: ₹${o.total}</div>
+                </div>`).join('') || '<div class="text-gray-500 text-sm">No orders</div>';
+        }
+
+        function updateAdminOrderStatus(id, status) {
+            const idx = adminOrders.findIndex(o => o.id === id);
+            if (idx >= 0) adminOrders[idx].status = status;
+            renderAdminOrders();
+            refreshAdminStats();
+            showNotification('Order updated ✅', 'success');
+        }
+
+        function renderAdminUsers() {
+            const wrap = document.getElementById('adminUsersList');
+            if (!wrap) return;
+            const entries = Object.entries(registeredUsers);
+            if (entries.length === 0) { wrap.innerHTML = '<div class="text-gray-500 text-sm">No registered users</div>'; return; }
+            wrap.innerHTML = entries.map(([email, u]) => `
+                <div class="bg-white border rounded-xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="font-medium">${u.name}</div>
+                        <div class="text-sm text-gray-500">${email} • ${u.phone || ''}</div>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-100">User</span>
+                </div>`).join('');
+        }
+
+        function renderAdminSettings() {
+            const name = document.getElementById('adminStoreName');
+            const charge = document.getElementById('adminDeliveryCharge');
+            if (name) name.value = adminSettings.storeName;
+            if (charge) charge.value = adminSettings.deliveryCharge;
+        }
+
+        function saveAdminSettings() {
+            const name = document.getElementById('adminStoreName').value.trim();
+            const charge = Number(document.getElementById('adminDeliveryCharge').value);
+            if (!name || isNaN(charge)) { showNotification('Enter valid settings', 'error'); return; }
+            adminSettings.storeName = name;
+            adminSettings.deliveryCharge = charge;
+            persistAdminSettings();
+            showNotification('Settings saved ✅', 'success');
+        }
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98bda17322018584',t:'MTc2MDAxMDMxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
+
+
 
